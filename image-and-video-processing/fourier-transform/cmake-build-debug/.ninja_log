@@ -1,0 +1,7 @@
+# ninja log v5
+1	2223	1640933422908282311	CMakeFiles/fourier_transform.dir/main.cpp.o	713ac8a9cf193d17
+2	844	1640933421531605785	CMakeFiles/fourier_transform.dir/utils.cpp.o	691d39355dd9cfb1
+2223	2649	1640933423331618671	fourier_transform	aed6ab6820a33a0d
+0	38	1640939426039125996	build.ninja	5b8fa430b394726f
+0	5	0	clean	e437286876ee02fd
+0	5	0	clean	e437286876ee02fd
