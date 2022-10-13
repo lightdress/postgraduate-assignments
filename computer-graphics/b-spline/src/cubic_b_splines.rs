@@ -69,7 +69,7 @@ impl<const M: usize, const N: usize> Curve<M, N> {
     }
     pub fn line(&mut self) {
         let mut ans = Vec::new();
-        let mut t: f64 = 0.0;
+        let mut t: f64 = 3.0;
         while t < self.points.len() as f64 {
             ans.push(get_curve(&self.points)(t));
             t += DELTA;
