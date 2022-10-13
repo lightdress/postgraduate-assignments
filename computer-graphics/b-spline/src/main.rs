@@ -3,12 +3,11 @@ use std::rc::Rc;
 
 use cubic_b_splines::Curve;
 use glib::clone;
-use gtk::gdk::BUTTON_PRIMARY;
-use gtk::gdk::BUTTON_SECONDARY;
+use gtk::gdk::{BUTTON_MIDDLE, BUTTON_PRIMARY, BUTTON_SECONDARY};
 use gtk::glib;
 use gtk::prelude::*;
-use gtk::GestureClick;
 use gtk::{Application, ApplicationWindow, DrawingArea};
+use gtk::{GestureClick, GestureDrag};
 
 const APP_ID: &str = "BSpline";
 
@@ -67,15 +66,39 @@ fn build_ui(app: &Application) {
     }));
     area.add_controller(&gesture_click_primary);
 
-    let gesture_click_secondary = GestureClick::builder().button(BUTTON_SECONDARY).build();
-    gesture_click_secondary.connect_pressed(clone!(@weak area, @weak curves => move |_, _, _, _| {
+    let gesture_click_middle = GestureClick::builder().button(BUTTON_MIDDLE).build();
+    gesture_click_middle.connect_pressed(clone!(@weak area, @weak curves => move |_, _, _, _| {
         if let Some(curve) = curves.borrow_mut().last_mut() {
             curve.line();
         }
         curves.borrow_mut().push(Curve::new());
         area.queue_draw();
     }));
-    area.add_controller(&gesture_click_secondary);
+    area.add_controller(&gesture_click_middle);
+
+    let gesture_drag_secondary = GestureDrag::builder().button(BUTTON_SECONDARY).build();
+    gesture_drag_secondary.connect_drag_end(
+        clone!(@weak area, @weak curves => move |drag, delta_x, delta_y| {
+            if let Some(origin) = drag.start_point() {
+                let origin = [origin.0, origin.1];
+                for curve in curves.borrow_mut().iter_mut() {
+                    if curve.is_empty() {
+                        continue;
+                    }
+                    if let Some(point) = curve.catch(&origin) {
+                        point[0] += delta_x;
+                        point[1] += delta_y;
+                        if curve.get_lines().is_some() {
+                            curve.line();
+                        }
+                        area.queue_draw();
+                        break;
+                    }
+                }
+            }
+        }),
+    );
+    area.add_controller(&gesture_drag_secondary);
 
     let window = ApplicationWindow::builder()
         .application(app)
