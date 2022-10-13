@@ -20,7 +20,7 @@ fn main() {
 }
 
 fn build_ui(app: &Application) {
-    let lines = Rc::new(RefCell::new(vec![Vec::<(f64, f64)>::new()]));
+    let lines = Rc::new(RefCell::new(vec![Vec::<[f64; 2]>::new()]));
     let area = DrawingArea::builder()
         .content_height(1024)
         .content_width(1024)
@@ -30,9 +30,9 @@ fn build_ui(app: &Application) {
             if line.is_empty() {
                 continue;
             }
-            context.move_to(line[0].0, line[0].1);
+            context.move_to(line[0][0], line[0][1]);
             for point in line.into_iter().skip(1) {
-                context.line_to(point.0, point.1);
+                context.line_to(point[0], point[1]);
             }
         }
         context.stroke().expect("Can't stroke!");
@@ -41,9 +41,9 @@ fn build_ui(app: &Application) {
     let gesture_click_primary = GestureClick::builder().button(BUTTON_PRIMARY).build();
     gesture_click_primary.connect_pressed(clone!(@weak area, @weak lines => move |_, _, x, y| {
         if let Some(line) = lines.borrow_mut().last_mut() {
-                line.push((x, y));
+                line.push([x, y]);
         } else {
-            lines.borrow_mut().push(Vec::<(f64, f64)>::new());
+            lines.borrow_mut().push(Vec::<[f64; 2]>::new());
         }
         area.queue_draw();
     }));
@@ -51,7 +51,7 @@ fn build_ui(app: &Application) {
 
     let gesture_click_secondary = GestureClick::builder().button(BUTTON_SECONDARY).build();
     gesture_click_secondary.connect_pressed(clone!(@weak lines => move |_, _, _, _| {
-        lines.borrow_mut().push(Vec::<(f64, f64)>::new());
+        lines.borrow_mut().push(Vec::<[f64; 2]>::new());
     }));
     area.add_controller(&gesture_click_secondary);
 
