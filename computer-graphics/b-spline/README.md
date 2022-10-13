@@ -2,8 +2,14 @@
 
 ## Function
 
-This is just a framework. It can only draw straight lines now, but I believe that turing it to draw B splines is just an algorithm problem.
+Draw uniform cubic B-splines.
 
 ## Usage
 
-Right click to line to your mouse position, and left click to finish a shape.
+Right click to line to your mouse position, and middle click to finish a shape.
+
+Press left button to drag the control points.
+
+## Limitation
+
+After change a control point, the whole curve will be recalculated.
